@@ -1,0 +1,33 @@
+---
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w
+      - -X github.com/prometheus/common/version.Version={{.Version}}
+      - -X github.com/prometheus/common/version.Revision={{.ShortCommit}}
+      - -X github.com/prometheus/common/version.Branch={{.Branch}}
+      - -X github.com/prometheus/common/version.BuildUser=goreleaser
+      - -X github.com/prometheus/common/version.BuildDate={{.Date}}
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+checksum:
+  name_template: '{{ .ProjectName }}-checksums.txt'
+  algorithm: sha256
+snapshot:
+  name_template: "{{ .Tag }}-SNAPSHOT-{{ .ShortCommit }}"
+changelog:
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
